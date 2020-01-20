@@ -108,7 +108,7 @@ class MessageBase(object):
          To find out what the epoch is on a given platform, look at time.gmtime(0). Can be obtained using the python
          function time.time() from the time module
          """
-        self._timeStampSec = float(timestamp)
+        self._timeStampSec = int(timestamp)
         self._timeStampFraction = igtl_nanosec_to_frac(int((timestamp - self._timeStampSec) * 10 ** 9))
 
     def getTimeStamp(self):
@@ -117,7 +117,7 @@ class MessageBase(object):
          the time starts, and is platform dependent. For Unix, the epoch is January 1, 1970, 00:00:00 (UTC).
          To find out what the epoch is on a given platform, look at time.gmtime(0).
         """
-        timestamp = (self._timeStampSec + igtl_frac_to_nanosec(self._timeStampFraction) / 10 ** 9)
+        timestamp = (float(self._timeStampSec) + float(igtl_frac_to_nanosec(self._timeStampFraction)) / 10 ** 9)
         return timestamp
 
     def getTimeStampSecFrac(self):
@@ -264,6 +264,7 @@ class MessageBase(object):
         # deserialize the body
         self._unpackContent()
         self._isBodyUnpacked = True
+        self._isBodyPacked = False
 
         return UNPACK_BODY
 

@@ -15,6 +15,7 @@ class IgtlHeader(object):
         self.crc = CRC64(b"")
 
     def pack(self, endian=">"):
+
         return struct.pack(endian + 'H12s20sIIQQ',
                                self.version,
                                self.type.encode('utf-8'),

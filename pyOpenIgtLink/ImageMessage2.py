@@ -318,7 +318,7 @@ class ImageMessage2(MessageBase):
         else:
             self._rawImage = rawImgData
 
-        imgShape = self._rawImage.shape
+        imgShape = list(self._rawImage.shape)
         self.setDimensions(imgShape)
 
     def getData(self):
@@ -378,10 +378,10 @@ class ImageMessage2(MessageBase):
         self._scalarType = PixelType(unpacked_header[2])
         self._endian = Endian(unpacked_header[3])
         self._coordinate = CoordSys(unpacked_header[4])
-        self._dimensions = unpacked_header[5:8]
+        self._dimensions = list(unpacked_header[5:8])
         self._matrix[0:3, :] = np.reshape(np.array(unpacked_header[8:20]), [3, 4], order='F')
-        self._subOffset = unpacked_header[20:23]
-        self._subDimensions = unpacked_header[23:26]
+        self._subOffset = list(unpacked_header[20:23])
+        self._subDimensions = list(unpacked_header[23:26])
 
         # unpack image data
         img_data = self.body[IGTL_IMAGE_HEADER_SIZE::]

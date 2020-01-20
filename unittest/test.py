@@ -86,8 +86,8 @@ class TestMessageBase(unittest.TestCase):
 class TestImageMessage2(unittest.TestCase):
 
     def test_pack_unpack(self):
-        print("Testing image message")
-        raw_img = np.zeros([10, 10], dtype = np.float32)
+        print("Testing image message ")
+        raw_img = np.zeros([100, 100], dtype = np.float32)
 
         img_msg = ImageMessage2()
         img_msg.setData(raw_img)
@@ -104,7 +104,7 @@ class TestImageMessage2(unittest.TestCase):
         # unpack body
         self.assertEqual(out_msg.unpack(), UNPACK_BODY)
 
-        self.assertEqual(out_msg.getData().shape, (10, 10, 1))
+        self.assertEqual(out_msg.getData().shape, (100, 100, 1))
         self.assertEqual(out_msg.getScalarType(), np.uint8)
 
 
