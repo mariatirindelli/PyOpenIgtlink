@@ -1,12 +1,11 @@
 from pyOpenIgtLink import *
 
-IGTL_HEADER_VERSION = 1
 IGTL_HEADER_SIZE = 58
 
 
 class IgtlHeader(object):
     def __init__(self):
-        self.version = IGTL_HEADER_VERSION  # version number
+        self.version = IGTL_HEADER_VERSION_1  # version number
         self.type = ""
         self.devicename = ""
         self.timestamp_sec = 0

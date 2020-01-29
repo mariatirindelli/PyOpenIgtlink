@@ -60,7 +60,7 @@ class MessageBase(object):
         self._content = None  # for some messages it makes sense also to have the content variable - not for the easiest
         self._bodySize = 0
         self._messageType = ""
-        self._headerVersion = IGTL_HEADER_VERSION
+        self._headerVersion = IGTL_HEADER_VERSION_1
         self._deviceName = ""
         self._timeStampSec = 0
         self._timeStampFraction = 0
@@ -236,6 +236,7 @@ class MessageBase(object):
         self._messageSize = self.getHeaderSize() + self._bodySize
 
         self._isHeaderUnpacked = True
+        self._isBodyUnpacked = False
         return UNPACK_HEADER
 
     def _unpackBody(self, crccheck, r):
@@ -268,13 +269,13 @@ class MessageBase(object):
 
         return UNPACK_BODY
 
-    def _packContent(self):
+    def _packContent(self, endian=">"):
         """
         Packs (serialize) the content. Must be implemented in all child classes
         /:return an int"""
         return 0
 
-    def _unpackContent(self):
+    def _unpackContent(self, endian=">"):
         """
         Unpacks (deserialize) the content. Must be implemented in all child classes.
         /:return an int"""

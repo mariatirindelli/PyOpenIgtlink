@@ -7,7 +7,7 @@ class TestHeader(unittest.TestCase):
     # checking the header gets correctly packed and unpacked
     def test_header(self):
         print("Testing OpenIGTLink Header")
-        p1 = IGTL_HEADER_VERSION  # version number
+        p1 = IGTL_HEADER_VERSION_1  # version number
         p2 = "IMAGE"  # message type
         p3 = "MARIA PC"  # device name
         p4 = 8000000  # timestamp seconds
@@ -45,7 +45,7 @@ class TestMessageBase(unittest.TestCase):
         # unpack must be always called on the header before and on the body in a second time, in order to be
         # sure all the information needed to unpack the body are available. These test check that if the header is not
         # unpacked, the method tries to unpack the header before doing anything else
-        p1 = IGTL_HEADER_VERSION  # version number
+        p1 = IGTL_HEADER_VERSION_1  # version number
         p2 = "IMAGE"  # message type
         p3 = "MARIA PC"  # device name
         p4 = 8000000  # timestamp seconds
@@ -91,6 +91,10 @@ class TestImageMessage2(unittest.TestCase):
 
         img_msg = ImageMessage2()
         img_msg.setData(raw_img)
+        img_msg.setSpacing([1, 2, 3])
+
+        mat = np.array([ [1, 0, 0, 4], [0, 1, 0, 2], [0, 0, 1, 6], [0, 0, 0, 1] ])
+        img_msg.setMatrix(mat)
 
         img_msg.pack()
 
@@ -106,6 +110,70 @@ class TestImageMessage2(unittest.TestCase):
 
         self.assertEqual(out_msg.getData().shape, (100, 100, 1))
         self.assertEqual(out_msg.getScalarType(), np.uint8)
+        self.assertEqual(out_msg.getSpacing(), [1, 2, 3])
+
+
+class TestCommandMessage(unittest.TestCase):
+
+    def test_pack_unpack(self):
+        print("Testing command message")
+        cmd_msg = CommandMessage()
+        cmd_msg.setCommandId(123)
+        cmd_msg.setCommandName("cmdname")
+
+        print("cmd id", cmd_msg.getCommandId())
+        print("cmd name", cmd_msg.getCommandName())
+
+        cmd_msg.pack()
+
+        rcv_msg = CommandMessage()
+        rcv_msg.header = cmd_msg.header
+        rcv_msg.unpack()
+
+        rcv_msg.body = cmd_msg.body
+        rcv_msg.unpack()
+
+        print("cmd id", rcv_msg.getCommandId())
+        print("cmd name", rcv_msg.getCommandName())
+
+    def test_unpack(self):
+        header = b'\x00\x01\x000\x005\x00F\x00F\n\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        cmd_msg = CommandMessage()
+        cmd_msg.header = header
+
+        if cmd_msg.unpack() != UNPACK_HEADER:
+            print("whaaat")
+        print(cmd_msg.getDeviceName())
+
+
+class TestStatusMessage(unittest.TestCase):
+
+    def test_pack_unpack(self):
+        print("Testing status message")
+        status_msg = StatusMessage()
+        status_msg.setCode(1)
+        status_msg.setSubCode(1)
+        status_msg.setErrorName("errorName")
+
+        status_msg.pack()
+
+        rcv_msg = CommandMessage()
+        rcv_msg.header = status_msg.header
+        rcv_msg.unpack()
+
+        rcv_msg.body = status_msg.body
+        rcv_msg.unpack()
+
+        print("Code: ", status_msg.getCode())
+        print("Sub Code: ", status_msg.getSubCode())
+        print("Error name: ", status_msg.getErrorName())
+
+    def test_unpack(self):
+        print("Testing status message - unpack")
+        rcv_msg = CommandMessage()
+        rcv_msg.header = b'\x00\x01STATUS\x00\x00\x00\x00\x00\x00StreamerSocket\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x1f\xfc\xe4lI~{\x03-'
+        a = rcv_msg.unpack()
+        print(a)
 
 
 if __name__ == '__main__':

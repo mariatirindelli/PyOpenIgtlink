@@ -183,12 +183,12 @@ class ImageMessage2(MessageBase):
         """Sets the orientation and origin matrix.
         :param matrix: a 4x4 matrix representing the origin and the orientation of the image.
         """
-        if not isinstance(matrix, np.array) and matrix.shape != [4, 4]:
+        if not isinstance(matrix, type(np.array)) and matrix.shape != (4, 4):
             raise ValueError("Input must be a 4x4 matrix")
 
         self._matrix = matrix
 
-    def getMatrix(self, matrix):
+    def getMatrix(self):
         """Gets the orientation and origin matrix.
         :return The 4x4 matrix representing the origin and the orientation of the image.
         """
@@ -382,6 +382,15 @@ class ImageMessage2(MessageBase):
         self._matrix[0:3, :] = np.reshape(np.array(unpacked_header[8:20]), [3, 4], order='F')
         self._subOffset = list(unpacked_header[20:23])
         self._subDimensions = list(unpacked_header[23:26])
+
+        self._spacing = [0, 0, 0]
+        self._spacing[0] = np.sqrt(self._matrix[0, 0] ** 2 + self._matrix[1, 0] ** 2 + self._matrix[2, 0] ** 2)
+        self._spacing[1] = np.sqrt(self._matrix[0, 1] ** 2 + self._matrix[1, 1] ** 2 + self._matrix[2, 1] ** 2)
+        self._spacing[2] = np.sqrt(self._matrix[0, 2] ** 2 + self._matrix[1, 2] ** 2 + self._matrix[2, 2] ** 2)
+
+        self._matrix[0:3, 0] = self._matrix[0:3, 0] / self._spacing[0]
+        self._matrix[0:3, 1] = self._matrix[0:3, 1] / self._spacing[1]
+        self._matrix[0:3, 2] = self._matrix[0:3, 2] / self._spacing[2]
 
         # unpack image data
         img_data = self.body[IGTL_IMAGE_HEADER_SIZE::]

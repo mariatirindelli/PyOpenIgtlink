@@ -2,6 +2,9 @@ import struct
 import crcmod
 import numpy as np
 
+IGTL_HEADER_VERSION_1 = 1
+IGTL_HEADER_VERSION_2 = 2
+
 # http://slicer-devel.65872.n3.nabble.com/OpenIGTLinkIF-and-CRC-td4031360.html
 CRC64 = crcmod.mkCrcFun(0x142F0E1EBA9EA3693, rev=False, initCrc=0x0000000000000000, xorOut=0x0000000000000000)
 
