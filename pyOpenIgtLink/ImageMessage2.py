@@ -379,7 +379,7 @@ class ImageMessage2(MessageBase):
         self._endian = Endian(unpacked_header[3])
         self._coordinate = CoordSys(unpacked_header[4])
         self._dimensions = list(unpacked_header[5:8])
-        self._matrix[0:3, :] = np.reshape(np.array(unpacked_header[8:20]), [3, 4], order='F')
+        self._matrix[0:3, :] = np.reshape(np.array(unpacked_header[8:20]), [3, 4], order='F') #TODO: check this
         self._subOffset = list(unpacked_header[20:23])
         self._subDimensions = list(unpacked_header[23:26])
 

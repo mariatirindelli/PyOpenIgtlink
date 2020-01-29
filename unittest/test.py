@@ -1,7 +1,6 @@
 import unittest
 from pyOpenIgtLink import *
 
-
 class TestHeader(unittest.TestCase):
 
     # checking the header gets correctly packed and unpacked
@@ -93,7 +92,7 @@ class TestImageMessage2(unittest.TestCase):
         img_msg.setData(raw_img)
         img_msg.setSpacing([1, 2, 3])
 
-        mat = np.array([ [1, 0, 0, 4], [0, 1, 0, 2], [0, 0, 1, 6], [0, 0, 0, 1] ])
+        mat = np.array([ [1, 0, 0, 4], [0, 1, 0, 2], [0, 0, 1, 6], [0, 0, 0, 1] ], dtype=np.float)
         img_msg.setMatrix(mat)
 
         img_msg.pack()
@@ -108,9 +107,15 @@ class TestImageMessage2(unittest.TestCase):
         # unpack body
         self.assertEqual(out_msg.unpack(), UNPACK_BODY)
 
+        print(mat)
+        print(out_msg.getMatrix())
+
+        print(mat[0:3, 3])
+
         self.assertEqual(out_msg.getData().shape, (100, 100, 1))
         self.assertEqual(out_msg.getScalarType(), np.uint8)
         self.assertEqual(out_msg.getSpacing(), [1, 2, 3])
+        self.assertEqual(out_msg.getMatrix(), mat)
 
 
 class TestCommandMessage(unittest.TestCase):
@@ -174,6 +179,32 @@ class TestStatusMessage(unittest.TestCase):
         rcv_msg.header = b'\x00\x01STATUS\x00\x00\x00\x00\x00\x00StreamerSocket\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x1f\xfc\xe4lI~{\x03-'
         a = rcv_msg.unpack()
         print(a)
+
+class TestPositionMessage(unittest.TestCase):
+
+    def test_pack_unpack(self):
+        print("Testing status message")
+        pos_msg = PositionMessage()
+        position = [1, 5, 2]
+        quat = [0, 0, np.sin(np.pi/4), np.cos(np.pi/4)]
+
+        pos_msg.setPosition(position)
+        pos_msg.setQuaternion(quat)
+
+        pos_msg.pack()
+
+        rcv_msg = PositionMessage()
+        rcv_msg.header = pos_msg.header
+        rcv_msg.unpack()
+
+        rcv_msg.body = pos_msg.body
+        rcv_msg.unpack()
+
+        self.assertEqual(rcv_msg.getPosition(), position)
+        self.assertAlmostEqual(rcv_msg.getQuaternion()[0], quat[0])
+        self.assertAlmostEqual(rcv_msg.getQuaternion()[1], quat[1])
+        self.assertAlmostEqual(rcv_msg.getQuaternion()[2], quat[2])
+        self.assertAlmostEqual(rcv_msg.getQuaternion()[3], quat[3])
 
 
 if __name__ == '__main__':

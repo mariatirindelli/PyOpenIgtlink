@@ -55,7 +55,7 @@ class PositionMessage(MessageBase):
         """
         return [self._x, self._y, self._z]
 
-    def getQuaternion(self, quat):
+    def getQuaternion(self):
         """
         Sets the quaternion
         :param quat: The quaternion
@@ -66,7 +66,7 @@ class PositionMessage(MessageBase):
 
         # set the command header
 
-        self.body = struct.pack(endian + 'f7',
+        self.body = struct.pack(endian + '7f',
                                  self._x,
                                  self._y,
                                  self._z,
@@ -80,7 +80,7 @@ class PositionMessage(MessageBase):
     def _unpackContent(self,  endian=">"):
 
         img_binary_header = self.body[0:IGTL_STATUS_HEADER_SIZE]
-        unpacked_header = struct.unpack(endian + 'f7', img_binary_header)
+        unpacked_header = struct.unpack(endian + '7f', img_binary_header)
 
         self._x = unpacked_header[0]
         self._y = unpacked_header[1]
