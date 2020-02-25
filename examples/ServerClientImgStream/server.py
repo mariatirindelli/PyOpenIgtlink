@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def main():
     server = igtl.SocketServer()
-    server.setAddress(address="127.0.0.1", port=5001)
+    server.setAddress(address="127.0.0.1", port=9004)
     server.start()
     server.waitForConnection()
 

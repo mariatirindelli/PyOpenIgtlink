@@ -71,6 +71,20 @@ class MessageBase(object):
 
     # TODO: implement for OpenIGTLink_HEADER_VERSION >= 2
 
+    def copyHeader(self, messageBase):
+        """Copies the unpacked header from another message"""
+        self.header = messageBase.header
+        self._headerVersion = messageBase.getHeaderVersion()  # version number
+        self._messageType = messageBase.getMessageType()
+        self._deviceName = messageBase.getDeviceName()
+        self._timeStampSec, self._timeStampFraction = messageBase.getTimeStampSecFrac()
+        self._receivedBodyCrc = messageBase.getBodyCrc()
+        self._bodySize = messageBase.getBodySizeToRead()  # the size of the binary body pack
+        self._isHeaderUnpacked = messageBase.isHeaderUnpacked()
+
+    def isHeaderUnpacked(self):
+        return self._isHeaderUnpacked
+
     def setHeaderVersion(self, header_version):
         """Sets the message version number"""
 
@@ -80,6 +94,10 @@ class MessageBase(object):
     def getHeaderVersion(self):
         """Gets the message version number"""
         return self._headerVersion
+
+    def getBodyCrc(self):
+        """Gets the message body crc"""
+        return self._receivedBodyCrc
 
     def setDeviceName(self, device_name):
         """Sets the device name"""
