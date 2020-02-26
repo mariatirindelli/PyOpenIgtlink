@@ -88,7 +88,6 @@ class SensorMessage(MessageBase):
 
     def _unpackContent(self,  endian=">"):
 
-        # TODO: only for 3 length array fix this!
         b_body_header = self.body[0:IGTL_SENSOR_HEADER_SIZE]
         unpacked_body_header = struct.unpack(endian + 'BBQ', b_body_header)
 
