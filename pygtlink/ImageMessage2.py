@@ -1,4 +1,4 @@
-from pyOpenIgtLink import *
+from pygtlink import *
 import enum
 import numpy as np
 
@@ -42,26 +42,20 @@ np2s = {v: k for k, v in s2np.items()}
 
 class ImageMessage2(MessageBase):
     """
-            Description for class
-            The difference between ImageMessage2 and ImageMessage is related to the memory allocation, which is an issue
-            in c++. In particular, ImageMessage2 in c++ allows to have the image raw data stored in a different (non
-            contiguous) memory area wrt to the rest of the pack. That is, I can point to the image source data without
-            the need to copy the image raw data in a memory area contiguous to the rest of the pack -> support for
-            fragemnted packs. An issue in c++, in this python implementation ImageMessage and ImageMessage2 are the same
+            The class implements the openIgtLink image message
 
-            :ivar _dimensions A vector containing the numbers of voxels in i, j and k directions.
-            :ivar _spacing: A vector containing the spacings of the voxels in i, j and k directions.
-            :ivar _SubDimensions  A vector containing the numbers of voxels of the subvolume in i, j and k directions.
-            :ivar _subOffset  A vector containing the offset (number of voxels) of the first voxel of the subvolume
-            from the first voxel of the original image.
-            :ivar _matrix A matrix representing the origin and the orientation of the image.
-            The matrix is set to identity by default
-            :ivar _endian A variable for the Endian of the scalar values in the image.
-            :ivar _numComponents A variable for the number of components
-            :ivar _scalarType A variable for the scalar type of the voxels
-            :ivar _coordinate A variable for the used coordinate system
-            :ivar _imgHeader The binary image header
-            :ivar _imgHeader The binary image data (raw data)
+            :ivar float _dimensions: A vector containing the numbers of voxels in i, j and k directions.
+            :ivar float[3] _spacing: A vector containing the spacings of the voxels in i, j and k directions.
+            :ivar int[3] _subDimensions:  A vector containing the numbers of voxels of the subvolume in i, j and
+                k directions.
+            :ivar int[3] _subOffset:  A vector containing the offset (number of voxels) of the first voxel of the
+                subvolume from the first voxel of the original image.
+            :ivar nd.array _matrix: A matrix representing the origin and the orientation of the image. The matrix is
+                set to identity by default
+            :ivar int _endian: A variable for the Endian of the scalar values in the image.
+            :ivar int _numComponents: A variable for the number of components
+            :ivar int _scalarType: A variable for the scalar type of the voxels
+            :ivar int _coordinate: A variable for the used coordinate system
     """
 
     def __init__(self):
@@ -83,11 +77,13 @@ class ImageMessage2(MessageBase):
         self._rawImage = np.array([0, 0])
 
     def setDimensions(self, dimensions):
-        """ Sets image dimensions by an array of the numbers of pixels in i, j and k directions.
-        SetDimensions() should be called prior to SetSubVolume(), since SetDimensions() sets subvolume
-        parameters automatically assuming that subvolume = entire volume.
-        :arg dimensions e-element list, tuple or array - rows, cols, channels
+        """
+        Sets image dimensions by an array of the numbers of pixels in i, j and k directions. SetDimensions() should be
+        called prior to :func:`~pygtlink.ImageMessage2.SetSubVolume`, since
+        :func:`~pygtlink.ImageMessage2.SetDimensions()` sets subvolume parameters automatically assuming that
+        subvolume = entire volume.
 
+        :param dimensions: element list, tuple or array - [rows, cols, channels]
         """
         self._isBodyPacked = False
         self._dimensions[0] = dimensions[0]
@@ -104,17 +100,22 @@ class ImageMessage2(MessageBase):
 
     def getDimensions(self):
         """Gets image dimensions as a tuple of the numbers of pixels in i, j and k directions.
-        :return: number of pixels in i, j, k directions
+
+        :returns: number of pixels in i, j, k directions
         """
         return self._dimensions
 
     def setSubVolume(self, dims, off):
-        """Sets sub-volume dimensions and offset by arrays of the dimensions and the offset.
-        SetSubVolume() should be called after calling SetDiemensions(), since SetDimensions() reset the subvolume
-        parameters automatically. Returns
+        """
+        Sets sub-volume dimensions and offset by arrays of the dimensions and the offset.
+        :func:`~pygtlink.ImageMessage2.SetSubVolume()' should be called after calling
+        :func:`~pygtlink.ImageMessage2.SetDimensions`, since :func:`~pygtlink.ImageMessage2.SetDimensions` reset the
+        subvolume parameters automatically.
+
         :param dims: 3-element list or array with the number of subvolume pixels in i, j, k directions
         :param off: 3-element list or array with the subvolume pixels offsets in i, j, k directions
-        :return: True if the subvolume is successfully specified, False if an invalid subvolume is specified.
+
+        :returns: True if the subvolume is successfully specified, False if an invalid subvolume is specified.
         """
         if off[0] + dims[0] >= self._dimensions[1] or off[1] + dims[1] >= self._dimensions[2] or \
             off[2] + dims[2] >= self._dimensions[2]:
@@ -131,12 +132,13 @@ class ImageMessage2(MessageBase):
     def getSubVolume(self):
         """Gets sub-volume dimensions and offset expressed in pixels in i, j, k directions
 
-        :return: dims[3], off[3] - 2 lists containing dimensions and offsets of the subvolume
+        :returns: dims[3], off[3] - 2 lists containing dimensions and offsets of the subvolume
         """
         return self._subDimensions, self._subOffset
 
     def setSpacing(self, spacing):
         """Sets spacings by an array or list of spacing values in i, j and k directions.
+
         :param spacing: array or list of spacing values
         """
         self._isBodyPacked = False
@@ -144,23 +146,25 @@ class ImageMessage2(MessageBase):
 
     def getSpacing(self):
         """Gets spacings as an array or list of spacing values in i, j and k directions.
-        :return list of spacing values
+
+        :returns: list of spacing values
         """
         return self._spacing
 
     def setOrigin(self, origin):
-        """ Sets the coordinates of the origin by an array of positions along the first (R or L),
-        second (A or P) and the third (S) axes.
+        """ Sets the coordinates of the origin by an array of positions along the first (R or L), second (A or P) and
+        the third (S) axes.
+
         :param: list or array with the origin coordinates
         """
         self._isBodyPacked = False
         self._matrix[1:3, 3] = np.array(origin)
 
     def getOrigin(self):
-        """Gets the coordinates of the origin using an array of positions along the first (R or L),
-        second (A or P) and the third (S) axes.
+        """ Gets the coordinates of the origin using an array of positions along the first (R or L), second (A or P) and
+        the third (S) axes.
 
-        :return: list of origin coordinates
+        :returns: list of origin coordinates
         """
         return np.squeeze(self._matrix[1:3, 3])
 
@@ -175,12 +179,13 @@ class ImageMessage2(MessageBase):
     def getNormals(self):
         """Gets the orientation of the image as an array of the normal vectors for the i, j and k indexes.
 
-        :return: The image orientation vector concatenated in a matrix per columns
+        :returns: The image orientation vector concatenated in a matrix per columns
         """
         return self._matrix[1:3, 1:3]
 
     def setMatrix(self, matrix):
         """Sets the orientation and origin matrix.
+
         :param matrix: a 4x4 matrix representing the origin and the orientation of the image.
         """
         if not isinstance(matrix, type(np.array)) and matrix.shape != (4, 4):
@@ -190,7 +195,8 @@ class ImageMessage2(MessageBase):
 
     def getMatrix(self):
         """Gets the orientation and origin matrix.
-        :return The 4x4 matrix representing the origin and the orientation of the image.
+
+        :returns: The 4x4 matrix representing the origin and the orientation of the image.
         """
         return self._matrix
 
@@ -205,7 +211,7 @@ class ImageMessage2(MessageBase):
     def getNumComponents(self):
         """Gets the number of components for each voxel.
 
-        :return: the number of components for each voxel.
+        :returns: the number of components for each voxel.
         """
         return self._numComponents
 
@@ -249,26 +255,28 @@ class ImageMessage2(MessageBase):
     def getScalarType(self):
         """Gets the image scalar type.
 
-        :return the image scalar type
+        :returns: the image scalar type
         """
         return np.dtype(s2np[self._scalarType])
 
     def getScalarSize(self):
         """Gets the size of the scalar type used in the current image data.
 
-        :return The size of the scalar type used in the current image data. return ScalarSizeTable[scalarType];
+        :returns: The size of the scalar type used in the current image data.
         """
         return np.dtype(s2np[self._scalarType]).itemsize
 
     def setEndian(self, endian):
         """Sets the Endianess of the image scalars. (default is ENDIAN_BIG)
-        :param endian Endianess of the image scalars
+
+        :param endian: Endianess of the image scalars
         """
         pass
 
     def getEndian(self, endian):
         """Gets the Endianess of the image scalars. (default is ENDIAN_BIG)
-        :return The endianess of the image scalars
+
+        :returns: The endianess of the image scalars
         """
         if not isinstance(endian, Endian):
             raise ValueError("input must be of type Endian")
@@ -277,15 +285,16 @@ class ImageMessage2(MessageBase):
     def getImageSize(self):
         """
         Gets the size (length) of the byte array for the image data. The size is defined by
-        dimensions[0]*dimensions[1]*dimensions[2]*scalarSize*numComponents.
-        :return: The size of the byte array for the image data, expressed as
-        dimensions[0]*dimensions[1]*dimensions[2]*scalarSize*numComponents.
+            dimensions[0]*dimensions[1]*dimensions[2]*scalarSize*numComponents.
+
+        :returns: The size of the byte array for the image data
         """
         return self._dimensions[0]*self._dimensions[1]*self._dimensions[2]*self.getScalarSize()*self._numComponents
 
     def setCoordinateSystem(self, coordSys):
         """Sets the coordinate system (COORDINATE_RAS or COORDINATE_LPS)
-        :param coordSys The coordinate system (COORDINATE_RAS or COORDINATE_LPS)
+
+        :param coordSys: The coordinate system (COORDINATE_RAS or COORDINATE_LPS)
         """
         if not isinstance(coordSys, CoordSys):
             raise ValueError("input must be of type CoordSys")
@@ -293,22 +302,26 @@ class ImageMessage2(MessageBase):
 
     def getCoordinateSystem(self):
         """Gets the coordinate system (COORDINATE_RAS or COORDINATE_LPS)
-        :return The coordinate system (COORDINATE_RAS or COORDINATE_LPS)
+
+        :returns: The coordinate system (COORDINATE_RAS or COORDINATE_LPS)
         """
         return self._coordinate
 
     def getSubVolumeSize(self):
-        """Gets the size (length) of the byte array for the subvolume image data.
-        The size is defined by subDimensions[0]*subDimensions[1]*subDimensions[2]*scalarSize*numComponents.
-        :return The size (length) of the byte array for the subvolume image data.
+        """Gets the size (length) of the byte array for the subvolume image data. The size is defined by
+            subDimensions[0]*subDimensions[1]*subDimensions[2]*scalarSize*numComponents.
+
+        :returns: The size (length) of the byte array for the subvolume image data.
         """
         self._subDimensions[0]*self._subDimensions[1]*self._subDimensions[2]*self.getScalarSize()*self._numComponents
 
     def setData(self, rawImgData):
         """
         Sets the image raw data
+
         :param rawImgData: image raw data
-        :return True if the data were correctly set, False otherwise
+
+        :returns: True if the data were correctly set, False otherwise
         """
         if not isinstance(rawImgData, np.ndarray) or not 2 <= len(rawImgData.shape) <= 4:
             return False
@@ -324,7 +337,8 @@ class ImageMessage2(MessageBase):
     def getData(self):
         """
         Gets the image raw data
-        :return Rhe image raw data
+
+        :returns: The image raw data
         """
         return self._rawImage
 
@@ -367,7 +381,7 @@ class ImageMessage2(MessageBase):
 
         self._bodySize = len(self.body)
 
-    def _unpackContent(self, endian = ">"):
+    def _unpackContent(self, endian=">"):
 
         # unpack image header
         img_binary_header = self.body[0:IGTL_IMAGE_HEADER_SIZE]
@@ -397,7 +411,3 @@ class ImageMessage2(MessageBase):
         flat_data = np.frombuffer(img_data, dtype=s2np[self._scalarType])
 
         self._rawImage = flat_data.reshape(self._dimensions)
-
-    #not sure it is needed
-    def _calculateContentSize(self):
-        pass

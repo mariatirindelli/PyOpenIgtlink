@@ -1,5 +1,6 @@
 import unittest
-from pyOpenIgtLink import *
+from pygtlink import *
+
 
 class TestHeader(unittest.TestCase):
 
@@ -125,7 +126,7 @@ class TestStatusMessage(unittest.TestCase):
 
         status_msg.pack()
 
-        rcv_msg = CommandMessage()
+        rcv_msg = StatusMessage()
         rcv_msg.header = status_msg.header
         rcv_msg.unpack()
 
@@ -134,7 +135,7 @@ class TestStatusMessage(unittest.TestCase):
 
     def test_unpack(self):
         print("Testing status message - unpack")
-        rcv_msg = CommandMessage()
+        rcv_msg = StatusMessage()
         rcv_msg.header = b'\x00\x01STATUS\x00\x00\x00\x00\x00\x00StreamerSocket\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x1f\xfc\xe4lI~{\x03-'
         a = rcv_msg.unpack()
 

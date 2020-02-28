@@ -1,4 +1,4 @@
-from pyOpenIgtLink import *
+from pygtlink import *
 
 IGTL_STATUS_HEADER_SIZE = 30
 
@@ -7,6 +7,15 @@ IGTL_STATUS_HEADER_SIZE = 30
 
 class PositionMessage(MessageBase):
     """
+        The class implements the openIgtLink position message
+
+        :ivar float _x: The x component of the position
+        :ivar float _y: The y component of the position
+        :ivar float _z: The z component of the position
+        :ivar float _ox: The first component of the orientation quaternion
+        :ivar float _oy: The second component of the orientation quaternion
+        :ivar float _oz: The third component of the orientation quaternion
+        :ivar float _w: The fourth component of the orientation quaternion
     """
 
     def __init__(self):
@@ -28,7 +37,8 @@ class PositionMessage(MessageBase):
     def setPosition(self, pos):
         """
         Sets the position
-        :param pos: The position
+
+        :param pos: The position to be set. It can be a 3-element list or nd.array
         """
         if len(pos) != 3:
             return
@@ -39,7 +49,8 @@ class PositionMessage(MessageBase):
     def setQuaternion(self, quat):
         """
         Sets the quaternion
-        :param quat: The quaternion
+
+        :param quat: The quaternion to be set. It can be a 4-element list or nd.array
         """
         if len(quat) != 4:
             return
@@ -51,14 +62,16 @@ class PositionMessage(MessageBase):
     def getPosition(self):
         """
         Gets the position
-        :return: The position
+
+        :returns: The position as a list [x, y, z]
         """
         return [self._x, self._y, self._z]
 
     def getQuaternion(self):
         """
         Sets the quaternion
-        :param quat: The quaternion
+
+        :returns: The quaternion as a list [ox, oy, oz, w]
         """
         return [self._ox, self._oy, self._oz, self._w]
 

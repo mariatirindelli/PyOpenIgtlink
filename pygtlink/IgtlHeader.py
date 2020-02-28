@@ -1,4 +1,4 @@
-from pyOpenIgtLink import *
+from pygtlink import *
 
 IGTL_HEADER_SIZE = 58
 
