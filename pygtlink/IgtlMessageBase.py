@@ -1,4 +1,4 @@
-from pyOpenIgtLink import *
+from pygtlink import *
 
 # Unpack status. They are returned by the Unpack() function.
 
@@ -9,58 +9,34 @@ UNPACK_BODY = 3
 
 class MessageBase(object):
     """
-        Description for class
+    Implementation of the base message. Base class for all king of messages
 
-        :ivar _messageSize The size of the message
-        :ivar _header: A pointer to the byte array for the serialized header. To prevent large
-        copy of the byte array in the Pack() function, header byte array is concatenated to the byte array for the body.
-                in cpp : unsigned char* m_Header;
-
-        :ivar _body:A pointer to the byte array for the serialized body. To prevent large copy of the byte array in
-        the Pack() function, header byte array is concatenated to the byte array for the header.
-                in cpp : unsigned char* m_Body;
-
-        :ivar _content:A pointer to the underlying content of a message
-                in cpp : unsigned char* m_Body;
-
-        :ivar _bodySize:The size of the body to be read. This function must be called after the message header is set.
-                in cpp :an int
-
-        :ivar _messageType:The message type
-
-        :ivar _headerVersion : An unsigned short for the message format version
-                in cpp :a unsigned short
-
-        :ivar _deviceName : A character string for the device name (message name).
-                in cpp :a string
-
-        :ivar _timeStampSec : A time stamp (second) for message creation. It consists of fields for seconds
+    :ivar bytearray header: A pointer to the byte array for the serialized header. To prevent large copy of the byte
+        array in the Pack() function, header byte array is concatenated to the byte array for the body.
+    :ivar bytearray body: A pointer to the byte array for the serialized body. To prevent large copy of the byte array
+        in the Pack() function, header byte array is concatenated to the byte array for the header.
+    :ivar int _messageSize: The size of the message
+    :ivar int _bodySize: The size of the body to be read. This function must be called after the message header is set.
+    :ivar str _messageType: The message type
+    :ivar int _headerVersion: An unsigned short for the message format version
+    :ivar str _deviceName: A character string for the device name (message name).
+    :ivar uint64 _timeStampSec: A time stamp (second) for message creation. It consists of fields for seconds
         (m_TimeStampSec)and fractions of a second (m_TimeStampSecFraction).
-                in cpp :a unsigned int
-
-        :ivar _timeStampFraction : A time stamp (second) for message creation. It consists of fields for seconds
+    :ivar uint64 _timeStampFraction: A time stamp (second) for message creation. It consists of fields for seconds
         (m_TimeStampSec)and fractions of a second (m_TimeStampSecFraction).
-                in cpp :a unsigned int
-
-        :ivar _isHeaderUnpacked : Unpacking (deserialization) status for the header
-                in cpp :a bool
-
-        :ivar _isBodyUnpacked : Unpacking (deserialization) status for the body
-                in cpp :a bool
-
-        :ivar _isBodyPacked : Packing (deserialization) status for the body
-                in cpp :a bool
-        """
+    :ivar bool _isHeaderUnpacked: Unpacking (deserialization) status for the header
+    :ivar bool _isBodyUnpacked: Unpacking (deserialization) status for the body
+    :ivar bool _isBodyPacked: Packing (deserialization) status for the body
+    """
 
     def __init__(self):
-        self.header = None  # binary header
-        self.body = None  # binary body
+        self.header = None  # binary header - in cpp  unsigned char* m_Header
+        self.body = None  # binary body - in cpp  unsigned char* m_Body
 
         self._messageSize = 0
-        self._content = None  # for some messages it makes sense also to have the content variable - not for the easiest
         self._bodySize = 0
         self._messageType = ""
-        self._headerVersion = IGTL_HEADER_VERSION_1
+        self._headerVersion = IGTL_HEADER_VERSION_1  # unsigned short
         self._deviceName = ""
         self._timeStampSec = 0
         self._timeStampFraction = 0
@@ -72,7 +48,10 @@ class MessageBase(object):
     # TODO: implement for OpenIGTLink_HEADER_VERSION >= 2
 
     def copyHeader(self, messageBase):
-        """Copies the unpacked header from another message"""
+        """Copies the unpacked header from another message
+
+            :param pygtlink.MessageBase messageBase: message from which to copy the header
+        """
         self.header = messageBase.header
         self._headerVersion = messageBase.getHeaderVersion()  # version number
         self._messageType = messageBase.getMessageType()
@@ -86,70 +65,94 @@ class MessageBase(object):
         return self._isHeaderUnpacked
 
     def setHeaderVersion(self, header_version):
-        """Sets the message version number"""
+        """Sets the message version number
+
+            :param int header_version: The header version to set
+        """
 
         self._headerVersion = int(header_version)
         self._isBodyPacked = False
 
     def getHeaderVersion(self):
-        """Gets the message version number"""
+        """Gets the message version number
+
+            :returns: The message header version
+        """
         return self._headerVersion
 
     def getBodyCrc(self):
-        """Gets the message body crc"""
+        """Gets the message body crc
+
+            :returns: The body crc
+        """
         return self._receivedBodyCrc
 
     def setDeviceName(self, device_name):
-        """Sets the device name"""
+        """Sets the device name
+
+            :param str device_name: The device name to set
+        """
         self._deviceName = str(device_name)
         self._isBodyPacked = False
 
     def setMessageType(self, msg_type):
-        """Sets the device (message) type"""
+        """Sets the device (message) type
+
+            :param str msg_type: The message type to set
+        """
         self._messageType = str(msg_type)
         self._isBodyPacked = False
 
     def getDeviceName(self):
-        """Gets the device name"""
+        """Gets the device name
+
+            :returns: The message device name
+        """
         return self._deviceName
 
     def getMessageType(self):
-        """Gets the device type"""
+        """Gets the device type
+
+            :returns: The message type
+        """
         return self._messageType
 
     # TODO: implement for OpenIGTLink_HEADER_VERSION >= 2
 
     def setTimeStamp(self, timestamp):
         """Sets the message timestamp
-        :param timestamp timestamp in seconds since the epoch as a floating point number. The epoch is the point where
-         the time starts, and is platform dependent. For Unix, the epoch is January 1, 1970, 00:00:00 (UTC).
-         To find out what the epoch is on a given platform, look at time.gmtime(0). Can be obtained using the python
-         function time.time() from the time module
+
+            :param int timestamp: timestamp in seconds since the epoch as a floating point number. The epoch is the point where
+                the time starts, and is platform dependent. For Unix, the epoch is January 1, 1970, 00:00:00 (UTC).
+                To find out what the epoch is on a given platform, look at time.gmtime(0). Can be obtained using the python
+                function time.time() from the time module
          """
         self._timeStampSec = int(timestamp)
         self._timeStampFraction = igtl_nanosec_to_frac(int((timestamp - self._timeStampSec) * 10 ** 9))
 
     def getTimeStamp(self):
         """Gets the message timestamp
-        :return The timestamp in seconds since the epoch as a floating point number. The epoch is the point where
-         the time starts, and is platform dependent. For Unix, the epoch is January 1, 1970, 00:00:00 (UTC).
-         To find out what the epoch is on a given platform, look at time.gmtime(0).
+
+            :returns: The timestamp in seconds since the epoch as a floating point number. The epoch is the point where
+                the time starts, and is platform dependent. For Unix, the epoch is January 1, 1970, 00:00:00 (UTC).
+                To find out what the epoch is on a given platform, look at time.gmtime(0).
         """
         timestamp = (float(self._timeStampSec) + float(igtl_frac_to_nanosec(self._timeStampFraction)) / 10 ** 9)
         return timestamp
 
     def getTimeStampSecFrac(self):
         """Gets the message timestamp
-        :return The timestamp expressed in second and fraction
+
+            :returns: The timestamp expressed in second and fraction
         """
         return self._timeStampSec, self._timeStampFraction
 
     def pack(self):
-        """serializes the header and body based on the member variables.
+        """Serializes the header and body based on the member variables.
             PackContent() must be implemented in the child class.
 
-            :return 0 in case of error, 1 if the message was successfully packed
-            """
+            :returns: 0 in case of error, 1 if the message was successfully packed
+        """
 
         if self._isBodyPacked:
             return 1
@@ -175,18 +178,25 @@ class MessageBase(object):
         return 1
 
     def unpack(self, crccheck = 0):
-        """Unpack() deserializes the header and/or body, extracting data from
-        the byte stream. If the header has already been deserialized, Unpack()
-        deserializes only the body part. UnpackBody() must be implemented to
-        deserialize the body part. Unpack() performs 64-bit CRC check,
-        when crccheck = 1. It returns (an int):
+        """Unpack() deserializes the header and/or body, extracting data from the byte stream.
+            If the header has already been deserialized, Unpack() deserializes only the body part.
+            UnpackBody() must be implemented to deserialize the body part. Unpack() performs 64-bit CRC check, when
+            crccheck = 1.
 
-        UNPACK_UNDEF             : Nothing deserialized
-        UNPACK_HEADER            : The header has been deserialized.
-        UNPACK_BODY              : The body has been deserialized.
-                                    If CRC check fails, Unpack() doesn't deserialize the body, thus it doesn't
-                                    return UNPACK_BODY flag.
-        UNPACK_HEADER|UNPACK_BODY: Both the header and body have been deserialized"""
+            :param int crccheck: The body crccheck
+
+            :returns: The unpacking result, i.e.
+
+                ============== =================================
+                Code             Meaning
+                ============== =================================
+                UNPACK_UNDEF    Nothing deserialized
+                UNPACK_HEADER   The header has been deserialized.
+                UNPACK_BODY     The body has been deserialized.
+                ============== =================================
+
+                If CRC check fails, Unpack() doesn't deserialize the body, thus it doesn't return UNPACK_BODY flag.
+            """
 
         r = UNPACK_UNDEF
         if self.header is not None and not self._isHeaderUnpacked:
@@ -204,24 +214,40 @@ class MessageBase(object):
 
     @staticmethod
     def getHeaderSize():
+        """Gets the igtl message header size (same for all messages)
+
+            :returns: The igtl message header size
+        """
         return IGTL_HEADER_SIZE
 
-    #TODO: THINK ABOUT THOSE
     def getPackSize(self):
-        """Gets the size of the serialized message data"""
+        """Gets the size of the serialized message
+
+        :returns: The message size
+        """
         return self._messageSize
 
     def getPackBodySize(self):
-        """Gets the size of the serialized body data"""
+        """
+        Gets the size of the message body.
+
+        :returns: The body size
+        """
         return self._bodySize
 
     def getBodySizeToRead(self):
         """
-        returns the size of the body to be read. This function must be called after the message header is set.
-        /:return an int"""
+        Gets the size of the body to be read. This function must be called after the message header is set. Same as
+            getPackBodySize()
+
+        :returns: The body size to read
+        """
         return self._bodySize
 
     def initBuffer(self):
+        """
+        Initializes the message
+        """
         self._isHeaderUnpacked = False
         self._isBodyPacked = False
         self._isBodyUnpacked = False
@@ -233,8 +259,11 @@ class MessageBase(object):
 
     def _unpackHeader(self):
         """
-        Unpack the first 58 bytes 
-        /:return r the status of the unpack operation""" # TODO: check it
+        Unpack the message header
+        
+        :returns: The status of the unpack operation
+        """
+        # TODO: check it
 
         unpacked_header = IgtlHeader()
 
@@ -261,7 +290,10 @@ class MessageBase(object):
         """
         Unpack the body (no idea what r is but is a int - int& r, crccheck is the crc to check)
         If it's a v3 message, body is ext header + content + metadataheader + metadata<optional>
-        /:return r the status of the unpack operation""" # TODO: check it
+        
+        :returns: r the status of the unpack operation
+        """
+        # TODO: check it
         if self.body is None:
             self._isBodyUnpacked = False
             return r
@@ -290,18 +322,23 @@ class MessageBase(object):
     def _packContent(self, endian=">"):
         """
         Packs (serialize) the content. Must be implemented in all child classes
-        /:return an int"""
+        :returns: an int
+        """
+
         return 0
 
     def _unpackContent(self, endian=">"):
         """
         Unpacks (deserialize) the content. Must be implemented in all child classes.
-        /:return an int"""
+
+        :returns: an int
+        """
         return 0
 
     #TODO: maybe not needed
     def _calculateContentBufferSize(self):
         """
         Gets the size of the serialized content
-        /:return an int"""
+
+        :return an int"""
         return 0
