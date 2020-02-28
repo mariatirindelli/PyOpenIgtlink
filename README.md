@@ -4,8 +4,9 @@ Install the package:
 
 <pre><code> pip install pygtlink </code></pre>
 
-This package provides an python implementation of OpenIgtLink message types. 
-Currently the implemented types are:  
+This package provides a python implementation of OpenIgtLink message types.  
+
+Currently the implemented message types are:  
 
 IMAGE  
 POSITION  
