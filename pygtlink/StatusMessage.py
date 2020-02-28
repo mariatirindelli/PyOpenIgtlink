@@ -1,14 +1,14 @@
-from pyOpenIgtLink import *
+from pygtlink import *
 
 IGTL_STATUS_HEADER_SIZE = 30
 
 
 class StatusMessage(MessageBase):
     """
-            :ivar _code The command code (uint16)
-            :ivar _subCode The command sub code (int64)
-            :ivar _errorName The error name (char[20])
-            :ivar _message The error message (char[BODY_SIZE - 30])
+            :ivar int _code: The command code (uint16)
+            :ivar int _subCode: The command sub code (int64)
+            :ivar str _errorName: The error name (char[20])
+            :ivar str _message: The error message (char[BODY_SIZE - 30])
     """
 
     def __init__(self):
@@ -26,8 +26,9 @@ class StatusMessage(MessageBase):
 
     def setCode(self, code):
         """
-        Sets the code
-        :param code: The code
+        Sets the status code
+
+        :param code: The status code to be set
         """
         if code < 0:
             return
@@ -35,39 +36,45 @@ class StatusMessage(MessageBase):
 
     def getCode(self):
         """
-        Gets the code
-        :return: The code
+        Gets the status code
+
+        :returns: The status code
         """
         return self._code
 
     def setSubCode(self, subCode):
         """
-        Sets the subcode
-        :param subCode: The subcode
+        Sets the status subcode
+
+        :param subCode: The status subcode
         """
         self._subCode = int(subCode)
 
     def getSubCode(self):
         """
-        Gets the code
-        :return: The code
+        Gets the status subcode
+
+        :returns: The status subcode
         """
         return self._subCode
 
     def setErrorName(self, errorName):
         """
-        Sets the error name
-        :param errorName: The error name
+        Sets the status error name
+
+        :param errorName: The status error name to be set
         """
         self._errorName = str(errorName)
 
     def getErrorName(self):
         """
-        Gets the command name
-        :return: The command name
+        Gets the status error name
+
+        :returns: The status error name
         """
         return self._errorName
 
+    # TODO add message content
     def _packContent(self, endian = ">"):
 
         # set the command header
@@ -80,7 +87,7 @@ class StatusMessage(MessageBase):
         self.body = binary_cmd
         self._bodySize = len(self.body)
 
-    def _unpackContent(self,  endian = ">"):
+    def _unpackContent(self,  endian=">"):
 
         img_binary_header = self.body[0:IGTL_STATUS_HEADER_SIZE]
         unpacked_header = struct.unpack(endian + 'Hq20s', img_binary_header)

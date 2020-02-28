@@ -1,4 +1,4 @@
-from pyOpenIgtLink import *
+from pygtlink import *
 import numpy as np
 
 IGTL_SENSOR_HEADER_SIZE = 10
@@ -6,10 +6,10 @@ IGTL_SENSOR_HEADER_SIZE = 10
 
 class SensorMessage(MessageBase):
     """
-            :ivar _larray The sensor array len (uint8)
-            :ivar _status The status (uint8)
-            :ivar _unit The unit (uint64)
-            :ivar _data The sensor data (float64[Larray])
+            :ivar int _larray: The sensor array len (uint8)
+            :ivar int _status: The status (uint8)
+            :ivar int _unit: The unit (uint64)
+            :ivar list _data: The sensor data (float64[Larray])
     """
 
     def __init__(self):
@@ -23,62 +23,70 @@ class SensorMessage(MessageBase):
         self._larray = 3  # uint8
         self._status = 0  # uint8
         self._unit = 0  # uint64
-        self._data = [0, 0, 0]  # float64[Larray]
+        self._data = []  # float64[Larray]
 
     def setLength(self, length):
         """Sets sensor data length (num elements)
-        :param length: array or list of spacing values
+
+        :param length: The array or list of spacing values
         """
         self._larray = length
 
     def getLength(self):
         """Gets sensor data length (num elements)
-        :return: sensor data length
+
+        :returns: The sensor data length
         """
 
         return self._larray
 
     def setData(self, data):
         """Sets sensor data
-        :param data: array or list of spacing values
+
+        :param data: The list or array of sensor data
         """
+        if isinstance(data, np.ndarray):
+            data = data.tolist()
         self._data = data
 
     def getData(self):
         """Gets sensor data
-        :return: sensor data
+
+        :returns: The sensor data
         """
         return self._data
 
     def setUnit(self, unit):
         """Sets unit
-        :param unit: sensor message unit (must be an int)
+
+        :param unit: The sensor data unit to be set (must be an int)
         """
         if isinstance(unit, int) and unit > 0:
             self._unit = unit
 
     def getUnit(self):
         """Gets sensor data unit
-        :return: sensor data unit
+
+        :returns: The sensor data unit
         """
         return self._unit
 
     def setStatus(self, status):
-        """Sets status.
-        :param status: array or list of spacing values
+        """Sets status
+
+        :param status: The status to be set
         """
         if isinstance(status, int) and status > 0:
             self._status = status
 
     def getStatus(self):
         """Gets sensor status
-        :return: sensor status
+
+        :returns: The sensor status
         """
         return self._status
 
     def _packContent(self, endian=">"):
-
-        self._data = [self._data[0], self._data[1], self._data[2]]
 
         b_body_header = struct.pack(endian + 'BBQ', self._larray, self._status, self._unit)
         b_data = struct.pack(endian + 'd' * len(self._data), *self._data)
@@ -100,4 +108,3 @@ class SensorMessage(MessageBase):
         data_list = list()
         data_list.append(unpacked_body)
         self._data = np.array(data_list).flatten()
-

@@ -6,15 +6,16 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pyOpenIgtLink-mariatirindelli", # Replace with your own username
-    version="0.0.1",
+    name="pygtlink", # Replace with your own username
+    version="1.0.0",
     author="Maria Tirindelli",
     author_email="maria.tirindelli@hotmail.it",
     description="A package to handle basic openigtlink message with python",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/mariatirindelli/PyOpenIgtlink",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=("tests", "examples")),
+    install_requires=["crcmod"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

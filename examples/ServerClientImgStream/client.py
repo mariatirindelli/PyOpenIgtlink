@@ -1,4 +1,4 @@
-import pyOpenIgtLink as igtl
+import pygtlink as igtl
 import time
 import matplotlib.pyplot as plt
 

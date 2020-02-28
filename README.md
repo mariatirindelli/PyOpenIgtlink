@@ -1,5 +1,11 @@
-# PyOpenIgtlink
+## PyOpenIgtlink
+
 Python implementation of the OpenIgtlink protocol 
 
+### Markdown
 
-python3 setup.py sdist bdist_wheel --- to build pack
+The library implements OpenIgtlink commands in Python. An example of a python openigtlink server and client is also provided.
+
+### Support or Contact
+
+maria.tirindelli@hotmail.it
