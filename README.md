@@ -1,8 +1,8 @@
 ## PyOpenIgtlink
 
-You can install it with
+Install the package:
 
- pip install pygtlink
+>> pip install pygtlink
 
 This package provides an python implementation of OpenIgtLink message types. 
 Currently the implemented types are:  
