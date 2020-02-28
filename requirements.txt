@@ -1,5 +1,4 @@
 crcmod
 numpy
-struct
 socket
 time
