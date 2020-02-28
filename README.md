@@ -10,6 +10,8 @@ SENSOR
 
 An example of a python openigtlink server and client is also provided.  
 
+Find the documentation for the package in https://pyopenigtlink.readthedocs.io/en/latest/pygtlink.html#module-pygtlink
+
 ### Support or Contact  
 
 maria.tirindelli@hotmail.it
