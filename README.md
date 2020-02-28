@@ -1,11 +1,15 @@
 ## PyOpenIgtlink
 
-Python implementation of the OpenIgtlink protocol 
+This package provides an python implementation of OpenIgtLink message types. 
+Currently the implemented types are:  
 
-### Markdown
+IMAGE  
+POSITION  
+STATUS  
+SENSOR  
 
-The library implements OpenIgtlink commands in Python. An example of a python openigtlink server and client is also provided.
+An example of a python openigtlink server and client is also provided.  
 
-### Support or Contact
+### Support or Contact  
 
 maria.tirindelli@hotmail.it
