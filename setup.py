@@ -14,8 +14,8 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/mariatirindelli/PyOpenIgtlink",
-    packages=setuptools.find_packages(exclude=("tests", "examples")),
-    install_requires=["crcmod"],
+    packages=setuptools.find_packages(exclude=("tests", "examples", "docs")),
+    install_requires=["crcmod", "numpy"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

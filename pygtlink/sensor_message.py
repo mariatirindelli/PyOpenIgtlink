@@ -1,6 +1,8 @@
 from pygtlink import *
 import numpy as np
 
+__all__ = ['SensorMessage']
+
 IGTL_SENSOR_HEADER_SIZE = 10
 
 

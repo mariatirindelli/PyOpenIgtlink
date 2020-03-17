@@ -1,5 +1,7 @@
 from pygtlink import *
 
+__all__ = ['PositionMessage']
+
 IGTL_STATUS_HEADER_SIZE = 30
 
 # TODO: add documentation
