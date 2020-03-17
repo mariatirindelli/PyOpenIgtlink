@@ -1,5 +1,7 @@
 from pygtlink import *
 
+__all__ = ['IgtlHeader']
+
 IGTL_HEADER_SIZE = 58
 
 

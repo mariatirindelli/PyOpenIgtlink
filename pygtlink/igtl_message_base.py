@@ -1,5 +1,7 @@
 from pygtlink import *
 
+__all__ = ['MessageBase']
+
 # Unpack status. They are returned by the Unpack() function.
 
 UNPACK_UNDEF = 1,

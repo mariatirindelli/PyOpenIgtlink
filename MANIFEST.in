@@ -1,0 +1,6 @@
+recursive-exclude dir venv
+recursive-exclude dir examples
+recursive-exclude dir tests
+recursive-exclude dir docs
+exclude readthedocs.yml
+exclude requirements.txt
