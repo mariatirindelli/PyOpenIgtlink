@@ -2,6 +2,9 @@ from pygtlink import *
 import enum
 import numpy as np
 
+__all__ = ['ImageMessage2']
+
+
 IGTL_IMAGE_HEADER_VERSION = 1
 IGTL_IMAGE_HEADER_SIZE = 72
 

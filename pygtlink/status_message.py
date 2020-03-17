@@ -1,4 +1,8 @@
 from pygtlink import *
+import numpy as np
+
+
+__all__ = ['StatusMessage']
 
 IGTL_STATUS_HEADER_SIZE = 30
 
@@ -72,17 +76,40 @@ class StatusMessage(MessageBase):
 
         :returns: The status error name
         """
-        return self._errorName
+        return ''.join(self._errorName)
+
+    def setMessage(self, message):
+        """
+        Sets the status message
+
+        :param message: The status message to be set
+        """
+        if len(message) > 30:
+            return
+        self._message = str(message)
+
+    def getMessage(self):
+        """
+        Gets the status message
+
+        :returns: The status message
+        """
+        return ''.join(self._message)
 
     # TODO add message content
     def _packContent(self, endian = ">"):
 
         # set the command header
 
-        binary_cmd = struct.pack(endian + 'Hq20s',
+        binary_cmd = struct.pack(endian + 'Hq',
                                  self._code,
-                                 self._subCode,
-                                 self._errorName.encode('utf-8'))
+                                 self._subCode)
+
+        s = bytes(self._errorName.ljust(20), 'ascii')  # Or other appropriate encoding
+        binary_cmd += struct.pack(endian + "%ds" % (len(s),), s)
+
+        s = bytes(self._message, 'ascii')  # Or other appropriate encoding
+        binary_cmd += struct.pack(endian + "%ds" % (len(s),), s)
 
         self.body = binary_cmd
         self._bodySize = len(self.body)
@@ -94,4 +121,9 @@ class StatusMessage(MessageBase):
 
         self._code = unpacked_header[0]
         self._subCode = unpacked_header[1]
-        self._errorName = unpacked_header[2].decode('utf-8').strip('\x00')
+        self._errorName = unpacked_header[2].decode('ascii').rstrip()
+
+        b_body = self.body[IGTL_STATUS_HEADER_SIZE::]
+        lbody = len(b_body)
+        unpacked_body = struct.unpack(endian + str(lbody) + "s", b_body)[0].decode('ascii')
+        self._message = unpacked_body

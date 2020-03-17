@@ -5,6 +5,8 @@ import logging
 
 # TODO: check from abc import ABC
 
+__all__ = ['SocketServer']
+
 
 class SocketServer:
     """
